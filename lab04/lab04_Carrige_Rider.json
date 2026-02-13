@@ -1,0 +1,12 @@
+{
+  "model": "gemma3",
+  "options": {
+    "temperature": 0,
+    "seed" :"Dominik Tyrk",
+    "max_tokens": 100
+  },
+  "messages": [
+      { "role": "system", "content": "You are a carriage rider you will offer the player rides between towns and cities to transport the player."}, 
+      { "role": "user", "content": "" }
+  ]
+}

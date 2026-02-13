@@ -3,36 +3,59 @@ import sys
 
 sys.path.append(str(Path(__file__).parents[1]))
 
-from util.llm_utils import AgentTemplate
+from util.llm_utils import TemplateChat
 
-# Add code here
 
-# But before here.
+BASE = Path(__file__).parent
 
-def run_console_chat(template_file, agent_name='Agent', **kwargs):
-    '''
-    Run a console chat with the given template file and agent name.
-    Args:
-        template_file: The path to the template file.
-        agent_name: The name of the agent to display in the console.
-        **kwargs: Additional arguments to pass to the AgentTemplate.from_file method.
-    '''
-    chat = AgentTemplate.from_file(template_file, **kwargs)
-    response = chat.start_chat()
+DM_TEMPLATE = BASE / "lab04_dm.json"
+NPC_TEMPLATE = BASE / "lab04_npc.json"
+CAARRIGE_RIDER = BASE / "lab04_Carrige_Rider.json"
+
+
+def run_chat(template_file, name="Agent", **kwargs):
+    chat = TemplateChat.from_file(template_file, **kwargs)
+    msg = chat.start_chat()
+
     while True:
-        print(f'{agent_name}: {response}')
+        print(f"{name}: {msg}")
         try:
-            response = chat.send(input('You: '))
-            # Add code here to check which agent chat should be started
-
-
-            # But before here.
-        except StopIteration as e:
+            user = input("You: ")
+            msg = chat.send(user)
+        except StopIteration:
             break
 
-if __name__ ==  '__main__':
-    # Add code here to start DM chat
+    return msg
 
 
-    # But before here.
-    pass
+def run_dm():
+    dm = TemplateChat.from_file(
+        DM_TEMPLATE,
+        encounters="npc, carriage_rider"
+    )
+
+    msg = dm.start_chat()
+
+    while True:
+        print(f"DM: {msg}")
+
+        try:
+            user = input("You: ")
+            msg = dm.send(user)
+
+            if "ENCOUNTER: npc" in msg:
+                print("\n--- NPC encounter begins ---\n")
+                run_chat(NPC_TEMPLATE, "NPC")
+                break
+
+            if "ENCOUNTER: carriage_rider" in msg:
+                print("\n--- Carriage Rider encounter begins ---\n")
+                run_chat(CAARRIGE_RIDER, "Carriage Rider")
+                break
+
+        except StopIteration:
+            break
+
+
+if __name__ == "__main__":
+    run_dm()
