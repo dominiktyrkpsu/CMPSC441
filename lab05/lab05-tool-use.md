@@ -1,1 +1,8 @@
 # Imaginative Use of Tool Calling
+An imaginative but feasible use of a tool would be an AI-powered story telling system. Instead of scripted quests with fixed outcomes, the large language model could direct a story with dozens of possible outcomes with small variations. The model would be able to dynamically change the dialogue options of NPCs the player interacts with based on the actions and phrases the player character says.
+
+For example, if a player was to do an action such as backstab an NPC, the model could modify the relationship through a tool call to decrease trust values in the game's database and then generate possible actions for that NPC in which the game engine would pick the most plausible one so it does not break the game state.
+
+Additionally, the model could call other tools such as update_world_state() to change faction alliances, spawn_event() to trigger revenge encounters, or adjust_economy() to reflect instability caused by the player’s actions. Each tool would interact directly with structured game systems rather than relying on text alone. After receiving the tool output, the model would generate dialogue and narrative descriptions that accurately reflect the updated game state.
+
+This idea is feasible because modern game engines already expose APIs that allow developers to modify NPC attributes, quest variables, and world parameters programmatically. Tool calling would allow the language model to act as a high-level narrative controller, making decisions while leaving rule enforcement and consistency to the engine itself. By combining structured tool calls with dynamic text generation, the system would create immersive, reactive worlds that feel alive while remaining technically stable and realistic to implement.
