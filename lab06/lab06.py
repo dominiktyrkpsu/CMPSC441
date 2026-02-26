@@ -86,7 +86,30 @@ def generate_character(description: str) -> CharacterSheet:
     Returns:
         A validated CharacterSheet instance
     """
-    pass
+    response = ollama.chat(
+        model=MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a Dungeons & Dragons character creator. "
+                    "Generate a complete D&D character sheet based on the "
+                    "user's description. Respond strictly in valid JSON "
+                    "matching the provided schema."
+                ),
+            },
+            {
+                "role": "user",
+                "content": description,
+            },
+        ],
+        format=CharacterSheet.model_json_schema(),  
+    )
+
+    # Parse and validate the structured JSON response
+    character = CharacterSheet.model_validate_json(response["message"]["content"])
+
+    return character
 
 
 def generate_monster(concept: str) -> MonsterStats:
@@ -103,7 +126,27 @@ def generate_monster(concept: str) -> MonsterStats:
     Returns:
         A validated MonsterStats instance
     """
-    pass
+    response = ollama.chat(
+        model=MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a Dungeons & Dragons monster creator. "
+                    "Generate complete stats for a D&D monster based on the "
+                    "user's concept. Respond strictly in valid JSON "
+                    "matching the provided schema."
+                ),
+            },
+            {
+                "role": "user",
+                "content": concept,
+            },
+        ],
+        format=MonsterStats.model_json_schema(),  
+    )
+    monster = MonsterStats.model_validate_json(response["message"]["content"])
+    return monster
 
 
 def generate_encounter(party_level: int, num_monsters: int, theme: str) -> Encounter:
@@ -128,7 +171,33 @@ def generate_encounter(party_level: int, num_monsters: int, theme: str) -> Encou
     Returns:
         A validated Encounter instance
     """
-    pass
+    response = ollama.chat(
+        model=MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a Dungeons & Dragons encounter designer. "
+                    "Create a complete encounter based on the user's parameters. "
+                    "Respond strictly in valid JSON matching the provided schema."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"Design an encounter for a party of level {party_level} with "
+                    f"{num_monsters} monsters. The theme is: {theme}. "
+                    "Include a variety of monsters and set the difficulty appropriately."
+                ),
+            },
+        ],
+        format=Encounter.model_json_schema(),  
+    )
+
+    # Parse and validate the structured JSON response
+    encounter = Encounter.model_validate_json(response["message"]["content"])
+
+    return encounter
 
 
 # ============================================================================
