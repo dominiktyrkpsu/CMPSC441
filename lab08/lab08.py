@@ -43,7 +43,15 @@ class OllamaEmbeddingFunction:
         Outputs:
             List[List[float]]: List of embedding vectors, one per input string.
         """
-        pass
+        return self.embed_documents(input)
+    
+    def embed_documents(self, input: List[str]) -> List[List[float]]:
+        response = ollama.embed(model=self.model_name, input=input)
+        return response["embeddings"]
+
+    def embed_query(self, input: List[str]) -> List[List[float]]:
+        response = ollama.embed(model=self.model_name, input=input)
+        return response["embeddings"]
 
 
 def load_documents(data_dir: str) -> Dict[str, str]:
@@ -156,7 +164,11 @@ def retrieve_context(collection: chromadb.Collection, query: str, n_results: int
     Outputs:
         List[str]: List of retrieved context strings relevant to the query.
     """
-    pass
+    results = collection.query(
+        query_texts=[query],
+        n_results=n_results,
+    )
+    return results["documents"][0]
 
 
 
@@ -227,7 +239,7 @@ def main():
     
     # Set embedding and LLM models
     embedding_model = "nomic-embed-text"  # Change to your preferred embedding model
-    llm_model = "llama3.2:latest"  # Change to your preferred LLM model
+    llm_model = "gemma3"  # Change to your preferred LLM model
     
     # 1. Load documents
     data_dir = "lab08/data"
