@@ -26,7 +26,7 @@ from mcp.client.stdio import stdio_client
 from langchain_mcp_adapters.tools import load_mcp_tools
 
 # LangGraph - prebuilt ReAct agent that handles the tool-calling loop
-from langchain.agents import create_react_agent
+from langchain.agents import create_agent
 
 # Ollama LLM via LangChain
 from langchain_ollama import ChatOllama
