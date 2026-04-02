@@ -65,7 +65,7 @@ By completing this lab, you will:
 
 ## Setup
 
-Install the required dependencies (delete the uv.lock file if the environment setup is stale):
+Install the required dependencies (delete the uv.lock file before running if the environment setup is stale):
 
 ```
 uv sync
