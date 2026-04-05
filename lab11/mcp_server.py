@@ -52,45 +52,49 @@ CHARACTERS = {
 # Each function should return a string with the result message.
 # =====================================================================
 
-
 def roll_dice(n_dice: int, sides: int, modifier: int = 0) -> str:
-    """
-    Roll n_dice dice with the given number of sides, plus a modifier.
+    try:
+        n_dice = int(n_dice)
+        sides = int(sides)
+        modifier = int(modifier) if modifier is not None else 0
+    except (ValueError, TypeError):
+        return "Error: Invalid input types. Please provide integers."
 
-    TODO:
-    - Roll each die using random.randint(1, sides)
-    - Sum the rolls and add the modifier
-    - Return a message like "Rolled 3d6+2: [4, 2, 5] + 2 = 13"
-    """
-    # TODO: Implement dice rolling
-    pass
+    rolls = [random.randint(1, sides) for _ in range(n_dice)]
+    total = sum(rolls) + modifier
+    return f"Rolled {n_dice}d{sides}+{modifier}: {rolls} + {modifier} = {total}"
+
+    
 
 
 def get_character_stat(character: str, stat: str) -> str:
-    """
-    Look up a character's stat from the CHARACTERS dict.
+    character = character.lower()
+    stat = stat.lower()
 
-    TODO:
-    - Normalize character and stat to lowercase
-    - Look up the character in CHARACTERS
-    - Return the stat value, e.g. "Fighter's strength is 16"
-    - Handle invalid character/stat names gracefully
-    """
-    # TODO: Implement character stat lookup
-    pass
+    if character not in CHARACTERS:
+        return f"Error: Unknown character '{character}'"
+
+    if stat not in CHARACTERS[character]:
+        return f"Error: Unknown stat '{stat}' for {character}"
+
+    value = CHARACTERS[character][stat]
+    return f"{character.capitalize()}'s {stat} is {value}"
+    
 
 
 def calculate_damage(base_damage: int, armor_class: int, attack_roll: int) -> str:
-    """
-    Calculate damage dealt based on attack roll vs armor class.
+    try:
+        base_damage = int(base_damage)
+        armor_class = int(armor_class)
+        attack_roll = int(attack_roll)
+    except (ValueError, TypeError):
+        return "Error: Invalid input types."
 
-    TODO:
-    - If attack_roll >= armor_class, the attack hits (return base_damage info)
-    - Otherwise, the attack misses (0 damage)
-    - Return a descriptive message
-    """
-    # TODO: Implement damage calculation
-    pass
+    if attack_roll >= armor_class:
+        return f"Attack hits! Dealt {base_damage} damage."
+    else:
+        return "Attack misses! Dealt 0 damage."
+    
 
 
 # =====================================================================
@@ -133,21 +137,70 @@ async def list_tools() -> list[Tool]:
     See demo/simple_mcp_server.py for the Tool schema format.
     """
     return [
-        # TODO: Define your tools here
-        # Example:
-        # Tool(
-        #     name="roll_dice",
-        #     description="Roll dice for DnD",
-        #     inputSchema={
-        #         "type": "object",
-        #         "properties": {
-        #             "n_dice": {"type": "integer", "description": "Number of dice"},
-        #             ...
-        #         },
-        #         "required": ["n_dice", "sides"]
-        #     }
-        # ),
-    ]
+    Tool(
+        name="roll_dice",
+        description="Rolls a dice and then adds a modifier to the result",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "n_dice": {
+                    "type": ["integer", "string"],
+                    "description": "(int) number of dice to roll"
+                },
+                "sides": {
+                    "type": ["integer", "string"],
+                    "description": "Integer ONLY. Do not include 'd'. Example: 20"
+                },
+                "modifier": {
+                    "type": ["integer", "string"],
+                    "description": "(int) modifier to add to the roll (default 0)",
+                    "default": 0
+                }
+            },
+            "required": ["n_dice", "sides"]
+        }
+    ),
+    
+    Tool(
+        name="get_character_stat",
+        description="Get a character's stat value",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "character": {
+                    "type": "string",
+                    "description": "Character name (fighter, wizard, or rogue)"
+                },
+                "stat": {
+                    "type": "string",
+                    "description": "Stat name (strength, dexterity, constitution, intelligence, wisdom, charisma)"
+                }
+            },
+            "required": ["character", "stat"]
+        }
+    ),
+
+    Tool(
+        name="calculate_damage",
+        description="Calculate damage dealt based on attack roll vs armor class",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "base_damage": {
+                    "type": ["integer", "string"]  
+                },
+                "armor_class": {
+                    "type": ["integer", "string"]  
+                },
+                "attack_roll": {
+                    "type": ["integer", "string"] 
+                }
+            },
+            "required": ["base_damage", "armor_class", "attack_roll"]
+        }
+    )
+]
+
 
 
 @server.call_tool()
