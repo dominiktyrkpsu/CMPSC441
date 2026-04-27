@@ -13,6 +13,7 @@ whether the greedy policy reliably reaches the goal.
 from collections import defaultdict
 
 import gymnasium as gym
+import random
 from tqdm import tqdm
 
 # Hyperparameters
@@ -34,35 +35,34 @@ returns_count = defaultdict(int)
 
 
 def choose_action(state, action_space, epsilon):
-    """Select an action using an epsilon-greedy policy over Q.
 
-    TODO (student):
-        With probability `epsilon`, return a random action sampled from
-        `action_space` (exploration) as shown in return.
-        Otherwise return argmax_a Q[(state, a)] (exploitation). Break
-        ties randomly so the agent does not get stuck when Q is all
-        zeros. When `epsilon == 0.0` this function must act greedily;
-        measurement mode relies on that.
-    """
-    # TODO: replace this line with your epsilon-greedy implementation.
-    return action_space.sample()
+
+
+    if random.random() < epsilon:
+        return action_space.sample()
+    
+    q_values = [Q[(state, a)] for a in range(action_space.n)]
+    max_q = max(q_values)
+
+
+    best_actions = [a for a in range(action_space.n) if Q[(state, a)] == max_q]
+    return random.choice(best_actions)
 
 
 def update_from_episode(episode):
-    """First-visit Monte Carlo update from one full episode.
+    G = 0
+    visited = set()
 
-    `episode` is a list of (state, action, reward) tuples in time order.
 
-    TODO (student):
-        1. Walk the episode backwards, accumulating the return
-               G = reward + GAMMA * G.
-        2. For the first visit of each (state, action) in the episode,
-           update the running average:
-               returns_count[(s, a)] += 1
-               Q[(s, a)] += (G - Q[(s, a)]) / returns_count[(s, a)]
-    """
-    # TODO: implement the first-visit MC update.
-    pass
+    for t in reversed(range(len(episode))):
+        state, action, reward = episode[t]
+        G = reward + GAMMA * G
+
+        if (state, action) not in visited:
+            visited.add((state, action))
+
+            returns_count[(state, action)] += 1
+            Q[(state, action)] += (G - Q[(state, action)]) / returns_count[(state, action)]
 
 
 def run_episode(env, epsilon):
