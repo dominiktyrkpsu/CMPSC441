@@ -61,21 +61,14 @@ By completing this lab, you will:
 - Ollama installed with `llama3.2:latest` model
 - Python 3.10+
 
-> **Why LangGraph?** Lab 05 had you manually format tools, run a chat loop, and append tool results back into the message history. LangGraph's `create_react_agent` handles all of that for you — you just give it an LLM and a list of tools.
+> **Why LangGraph?** Lab 05 had you manually format tools, run a chat loop, and append tool results back into the message history. LangChain's `create_agent` handles all of that for you — you just give it an LLM and a list of tools.
 
 ## Setup
 
-Install the required dependencies:
+Install the required dependencies (delete the uv.lock file before running if the environment setup is stale):
 
-```bash
-cd lab11
-pip install -r requirements.txt
 ```
-
-Or with uv:
-
-```bash
-uv pip install -r requirements.txt
+uv sync
 ```
 
 Ensure Ollama is running:
@@ -136,10 +129,6 @@ Complete `mcp_server.py` to create an MCP server with three DnD-related tools.
 3. **`calculate_damage(base_damage: int, armor_class: int, attack_roll: int) -> str`**
    - Returns a message describing damage dealt (base_damage if attack_roll >= armor_class, else 0)
 
-**Then define the tool schemas** in `list_tools()` so the MCP client can discover them. Use the demo server as a reference for the `Tool` schema format.
-
-The `call_tool` dispatcher and `TOOL_FUNCTIONS` mapping are already provided — you just need to implement the functions and schemas.
-
 **Test your server:**
 ```bash
 python mcp_server.py
@@ -154,7 +143,7 @@ Complete `lab11.py` to:
 1. Connect to your MCP server
 2. Load MCP tools as LangChain tools using `load_mcp_tools(session)`
 3. Create a `ChatOllama` LLM instance
-4. Build a LangGraph ReAct agent with `create_react_agent(llm, tools, state_modifier=SYSTEM_PROMPT)`
+4. Build a LangChain based agent with `create_agent(llm, tools, system_prompt=SYSTEM_PROMPT)`
 5. Invoke the agent with user messages and return the final response
 
 The `load_mcp_tools` adapter handles tool format conversion automatically — no need to write `format_tools_for_ollama()` by hand. The ReAct (Reasoning and Acting) agent handles the tool-calling loop — no need to manually append tool results to the message history.
